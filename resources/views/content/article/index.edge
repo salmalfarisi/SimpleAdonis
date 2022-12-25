@@ -1,0 +1,82 @@
+@layout('layouts.app')
+
+@section('content')
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+			<div class="card">
+                <div class="card-header">
+					<div class="d-flex justify-content-between">
+						<div>
+							Articles
+						</div>
+						<div>
+							<a href="{{ route('Article.create') }}" class="btn btn-sm btn-primary">Create new data</a>
+						</div>
+					</div>
+				</div>
+
+                <div class="card-body">
+                    <table class="table table-striped">
+					  <thead>
+						<tr>
+						  <th scope="col">No</th>
+						  <th scope="col">Title</th>
+						  <th scope="col">Description</th>
+						  <th scope="col">Action</th>
+						</tr>
+					  </thead>
+					  <tbody>
+						@each(datas in data)
+							<tr>
+							  <th scope="row">1</th>
+							  <td>{{ datas.title }}</td>
+							  <td>
+								@if(datas.description == null) 
+									Data not found 
+								@else 
+									{{ datas.description }} 
+								@endif
+							  </td>
+							  <td>
+								<div class="d-flex justify-content-between">
+									<div>
+										<a href="{{ route('Article.edit', [datas.id]) }}" class="btn btn-sm btn-warning">Edit</a>
+									</div>
+									<div>
+										<a href="{{ route('Article.destroy', [datas.id]) }}" class="btn btn-sm btn-danger">Delete</a>
+									</div>
+								</div>
+							  </td>
+							</tr>
+						@endeach
+					  </tbody>
+					</table>
+                </div>
+                <div class="card-footer">
+					<div class="d-flex justify-content-between">
+						<div>
+							Total data : {{ data.length }}
+						</div>
+						<div>
+							@if(data.length != parseInt('0'))
+								@each(anchor in data.getUrlsForRange(1, data.lastPage))
+									<a href="{{ anchor.url }}">
+										{{ anchor.page }}
+									</a>
+								@endeach
+							@endif
+						</div>
+					</div>
+				</div>
+            </div>
+		</div>
+	</div>
+</div>
+
+@endsection
+
+@section('javascript')
+
+@endsection

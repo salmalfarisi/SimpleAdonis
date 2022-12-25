@@ -1,0 +1,135 @@
+@layout('layouts.app')
+
+@section('content')
+	
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+			<div class="card">
+                <div class="card-header">
+					<div class="card-title mb-0">
+						{{ formdata.id == null ? 'Create new data' : 'Edit data' }}
+					</div>
+				</div>
+
+                <div class="card-body">
+                    <form method="POST" action="{{ formdata.id == null ? route('Article.store') : route('Article.update', [formdata.id]) }}" enctype="multipart/form-data">
+                        {{ csrfField() }}
+
+                        <div class="row mb-3">
+                            <label for="title" class="col-md-4 col-form-label text-md-end">{{ ('Title') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="title" type="text" class="form-control" name="title" value="{{ formdata.id == null ? '' : formdata.title }}" required autocomplete="title" autofocus>
+
+                                @if(flashMessages.has('title'))
+									<p> {{ flashMessages.get('errors.title') }} </p>
+								@end
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="description" class="col-md-4 col-form-label text-md-end">{{ ('Description') }}</label>
+
+                            <div class="col-md-6">
+                                <textarea class="form-control" id="description" row="5" name="description">{{ formdata.id == null ? '' : formdata.description }}</textarea>
+
+                                @if(flashMessages.has('description'))
+									<p> {{ flashMessages.get('errors.description') }} </p>
+								@end
+                            </div>
+                        </div>
+						
+						<div class="row mb-3">
+                            <label for="image" class="col-md-4 col-form-label text-md-end">{{ ('Image') }}</label>
+							
+                            <div class="col-md-6">
+								<div class="custom-file mb-3">
+									<input id="image" type="file" class="custom-file-input form-control" onchange="tampilkanPreview(this, 'preview')" name="image" autofocus>
+									<label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+								</div>
+                                
+                                @if(flashMessages.has('image'))
+									<p> {{ flashMessages.get('errors.image') }} </p>
+								@end
+								
+								<image width="250px" length="250px" id="preview" hidden>
+                            </div>
+                        </div>
+
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between">
+								<div>
+                                    <a class="btn btn-danger" href="{{ route('Article.index') }}">
+                                        Back
+                                    </a>
+								</div>
+								<div>
+									<button type="submit" class="btn btn-primary">
+										{{ formdata.id == null ? 'Create' : 'Update' }}
+									</button>
+								</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+@endsection
+
+@section('javascript')
+
+	<script>
+		function tampilkanPreview(gambar,preview){
+			//	membuat objek gambar
+			var gb = gambar.files;
+			//	loop untuk merender gambar
+			for (var i = 0; i < gb.length; i++){
+				//	bikin variabel
+				document.getElementById('preview').style.display = 'inline-block';
+				var gbPreview = gb[i];
+				var preview=document.getElementById(preview);
+				var reader = new FileReader();
+				var getname = document.querySelector('#image').value; 
+				extension = getname.split('.');
+				var looping;
+				var lastextension = "";
+				for(looping = 0; looping < extension.length; looping++){
+					lastextension = extension[looping];
+				}
+				if(lastextension.toLowerCase() == "jpeg" || lastextension.toLowerCase() == "jpg" || lastextension.toLowerCase() == "png")
+				{
+					document.getElementById('preview').style.display = 'inline';
+					document.getElementById('preview').hidden = false;
+					preview.file = gbPreview;
+					reader.onload = (function(element) {
+						return function(e) {
+							element.src = e.target.result;
+						};
+					})(preview);
+					//	membaca data URL gambar
+					reader.readAsDataURL(gbPreview);
+				}
+				else
+				{
+					alert('upload image as jpg or jpeg or png file extension');
+					document.getElementById('preview').style.display = 'none';
+					document.getElementById('preview').hidden = true;
+				}
+			}
+		}
+	</script>
+	
+	<script>
+		$('input[type="file"]').change(function(e){
+			var fileName = e.target.files[0].name;
+			$('.custom-file-label').html(fileName);
+		});
+	</script>
+
+@endsection
